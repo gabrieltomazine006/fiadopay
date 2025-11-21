@@ -1,27 +1,35 @@
 package edu.ucsal.fiadopay.domain.paymant;
 
+import edu.ucsal.fiadopay.domain.merchant.Merchant;
 import jakarta.persistence.*;
 import lombok.*;
+
+
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Objects;
 
 @Entity
 @Data @NoArgsConstructor @AllArgsConstructor @Builder
 @Table(
-    indexes = { @Index(columnList="merchantId"), @Index(columnList="status") },
-    uniqueConstraints = {
-        @UniqueConstraint(name = "uk_payment_merchant_idempotency", columnNames = {"merchantId", "idempotencyKey"})
-    }
+        name = "payment_table",
+        indexes = { @Index(columnList="merchant_id"), @Index(columnList="status") },
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_payment_merchant_idempotency", columnNames = {"merchant_id", "idempotencyKey"})
+        }
 )
+
 public class Payment {
     @Id
     private String id; // pay_xxx
 
-    @Column(nullable = false)
-    private Long merchantId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "merchant_id", nullable = false)
+    private Merchant merchant;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private String method; // CARD|PIX|DEBIT|BOLETO
+    private MethodPayment method;
 
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal amount;
@@ -29,28 +37,28 @@ public class Payment {
     @Column(nullable = false, length = 10)
     private String currency;
 
-    @Column(nullable = false)
-    private Integer installments; // 1..12
-
-    // Mantido como Double por simplicidade no simulador
-    private Double monthlyInterest; // 1.0 (=1%/mês)
-
-    @Column(nullable = false, precision = 19, scale = 2)
-    private BigDecimal totalWithInterest;
+    @Column(length = 64)
+    private String idempotencyKey;
+    @Column(length = 255)
+    private String metadataOrderId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private Status status; // PENDING|APPROVED|DECLINED|EXPIRED|REFUNDED
+    private Status status;
 
     @Column(nullable = false)
     private Instant createdAt;
     @Column(nullable = false)
     private Instant updatedAt;
 
-    @Column(length = 64)
-    private String idempotencyKey;
-    @Column(length = 255)
-    private String metadataOrderId;
+    @Column(columnDefinition = "jsonb")
+    private String detailsJson;
 
-    public enum Status { PENDING, APPROVED, DECLINED, EXPIRED, REFUNDED }
+    public boolean belongsToMerchant(Long id) {
+        return Objects.equals(this.merchant.getId(), id);
+    }
+
+
+
+
 }

@@ -1,7 +1,7 @@
 package edu.ucsal.fiadopay.service.merchantService;
 
-import edu.ucsal.fiadopay.domain.merchant.Merchant;
 import edu.ucsal.fiadopay.domain.merchant.dto.MerchantCreate;
+import edu.ucsal.fiadopay.domain.merchant.Merchant;
 import edu.ucsal.fiadopay.domain.merchant.dto.MerchantRensponse;
 import edu.ucsal.fiadopay.domain.merchant.dto.Status;
 import edu.ucsal.fiadopay.repo.MerchantRepository;
@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;

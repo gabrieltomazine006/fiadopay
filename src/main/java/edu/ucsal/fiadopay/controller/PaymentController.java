@@ -1,11 +1,14 @@
 package edu.ucsal.fiadopay.controller;
 
-import edu.ucsal.fiadopay.service.PaymentService;
+import edu.ucsal.fiadopay.domain.paymant.dto.PaymentRequest;
+import edu.ucsal.fiadopay.domain.paymant.dto.PaymentResponse;
+import edu.ucsal.fiadopay.domain.merchant.Merchant;
+import edu.ucsal.fiadopay.service.payment.PaymentService;
 import org.springframework.http.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 import jakarta.validation.Valid;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
@@ -17,23 +20,23 @@ public class PaymentController {
   @PostMapping("/payments")
   @SecurityRequirement(name = "bearerAuth")
   public ResponseEntity<PaymentResponse> create(
-      @Parameter(hidden = true) @RequestHeader("Authorization") String auth,
       @RequestHeader(value="Idempotency-Key", required=false) String idemKey,
-      @RequestBody @Valid PaymentRequest req
+      @RequestBody @Valid PaymentRequest req,
+      @AuthenticationPrincipal Merchant merchant
   ) {
-    var resp = service.createPayment(auth, idemKey, req);
+    var resp = service.createPayment(merchant,idemKey, req);
     return ResponseEntity.status(HttpStatus.CREATED).body(resp);
   }
 
   @GetMapping("/payments/{id}")
-  public PaymentResponse get(@PathVariable String id) {
-    return service.getPayment(id);
+  public PaymentResponse get( @AuthenticationPrincipal Merchant merchant, @PathVariable String id) {
+    return service.getPayment(id, merchant);
   }
 
   @PostMapping("/refunds")
   @SecurityRequirement(name = "bearerAuth")
-  public java.util.Map<String,Object> refund(@Parameter(hidden = true) @RequestHeader("Authorization") String auth,
+  public java.util.Map<String,Object> refund(@AuthenticationPrincipal Merchant merchant,
                                    @RequestBody @Valid RefundRequest body) {
-    return service.refund(auth, body.paymentId());
+    return service.refund(merchant, body.paymentId());
   }
 }

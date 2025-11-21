@@ -1,7 +1,6 @@
 package edu.ucsal.fiadopay.service.payment;
-
-import edu.ucsal.fiadopay.domain.paymant.Payment;
 import edu.ucsal.fiadopay.domain.paymant.Status;
+import edu.ucsal.fiadopay.domain.paymant.Payment;
 import edu.ucsal.fiadopay.repo.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

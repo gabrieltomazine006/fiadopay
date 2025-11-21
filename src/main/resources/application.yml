@@ -7,10 +7,19 @@ spring:
     driverClassName: org.h2.Driver
     username: sa
     password:
+
+
+logging:
+  file:
+    name: app.logs
+  level:
+    root: INFO
+
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+
+
   h2:
     console:
       enabled: true
@@ -26,3 +35,6 @@ springdoc:
     path: /v3/api-docs
   swagger-ui:
     path: /swagger-ui.html
+
+jwt:
+  secret: kg2OTmb0NRhLzS7ZfluwbEkU4cJNcC0jPVnmJCUrvUiieRUhB21WCG2g6d6n8GW3

@@ -1,10 +1,11 @@
-package edu.ucsal.fiadopay.domain;
+package edu.ucsal.fiadopay.domain.WebhookDelivery;
 
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.Instant;
 
 @Entity
+@Table(name = "webhook_table")
 @Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class WebhookDelivery {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

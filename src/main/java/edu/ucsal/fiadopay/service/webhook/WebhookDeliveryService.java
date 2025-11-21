@@ -1,8 +1,8 @@
 package edu.ucsal.fiadopay.service.webhook;
 
-
-import edu.ucsal.fiadopay.domain.WebhookDelivery;
+import edu.ucsal.fiadopay.domain.WebhookDelivery.WebhookDelivery;
 import edu.ucsal.fiadopay.repo.WebhookDeliveryRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
