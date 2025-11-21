@@ -1,6 +1,6 @@
 package edu.ucsal.fiadopay.service.webhook;
 
-import edu.ucsal.fiadopay.domain.WebhookDelivery.WebhookDelivery;
+import edu.ucsal.fiadopay.domain.webhookDelivery.WebhookDelivery;
 import edu.ucsal.fiadopay.repo.WebhookDeliveryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

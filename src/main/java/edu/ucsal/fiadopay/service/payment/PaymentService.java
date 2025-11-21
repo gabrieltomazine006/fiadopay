@@ -11,7 +11,7 @@ import edu.ucsal.fiadopay.domain.paymant.dto.PaymentRequest;
 import edu.ucsal.fiadopay.domain.paymant.dto.PaymentResponse;
 import edu.ucsal.fiadopay.domain.merchant.Merchant;
 import edu.ucsal.fiadopay.domain.paymant.Payment;
-import edu.ucsal.fiadopay.domain.WebhookDelivery.WebhookDelivery;
+import edu.ucsal.fiadopay.domain.webhookDelivery.WebhookDelivery;
 import edu.ucsal.fiadopay.domain.paymant.factory.PaymentFactoryImpl;
 import edu.ucsal.fiadopay.domain.paymant.strategy.PaymentStrategy;
 import edu.ucsal.fiadopay.repo.PaymentRepository;

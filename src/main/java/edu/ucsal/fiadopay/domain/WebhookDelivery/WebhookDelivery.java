@@ -1,4 +1,4 @@
-package edu.ucsal.fiadopay.domain.WebhookDelivery;
+package edu.ucsal.fiadopay.domain.webhookDelivery;
 
 import jakarta.persistence.*;
 import lombok.*;

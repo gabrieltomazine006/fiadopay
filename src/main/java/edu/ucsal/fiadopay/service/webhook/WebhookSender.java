@@ -1,6 +1,6 @@
 package edu.ucsal.fiadopay.service.webhook;
 
-import edu.ucsal.fiadopay.domain.WebhookDelivery.WebhookDelivery;
+import edu.ucsal.fiadopay.domain.webhookDelivery.WebhookDelivery;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
