@@ -1,4 +1,4 @@
-package edu.ucsal.fiadopay.domain;
+package edu.ucsal.fiadopay.domain.paymant;
 
 import jakarta.persistence.*;
 import lombok.*;
