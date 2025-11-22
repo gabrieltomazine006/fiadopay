@@ -1,64 +1,63 @@
-FiaDoPay – API de Pagamentos
+FiaDoPay – API de Pagamentos (Versão Atualizada)
 
-Este projeto é uma API de pagamentos construída em Java + Spring Boot,
-utilizando autenticação segura via Spring Security, emissão de tokens
-(Bearer e Basic), processamento assíncrono, webhooks, entregas de
-eventos e sistema completo de merchants e pagamentos.
+Esta aplicação é uma API completa para criação de usuários, merchants,
+emissão de tokens, geração de pagamentos, processamento assíncrono e
+webhooks.
 
 ------------------------------------------------------------------------
 
-🚀 Fluxo Completo da Plataforma
+🚀 Fluxo Completo
+
+------------------------------------------------------------------------
 
 1. Criar Usuário
 
-O cliente inicia criando um usuário com e-mail e senha.
-Após o cadastro, o sistema retorna um token Bearer.
-
-Exemplo de Requisição (via ambiente):
+Retorna Bearer Token
 
     POST /users
-    Authorization: none
-    BODY:
+    Headers:
+      Content-Type: application/json
+
+    Body:
     {
       "email": "${EMAIL}",
       "password": "${PASSWORD}"
-    }
-
-Resposta:
-
-    {
-      "token": "Bearer eyJhbGciOi..."
     }
 
 ------------------------------------------------------------------------
 
 2. Criar Merchant
 
-Com o token Bearer do usuário, ele cria um Merchant.
-
     POST /merchant
-    Authorization: Bearer ${USER_TOKEN}
-    BODY:
+    Headers:
+      Authorization: Bearer ${USER_TOKEN}
+      Content-Type: application/json
+
+    Body:
     {
-      "name": "${MERCHANT_NAME}"
+        "name": "MinhaLoja xY",
+        "webhookUrl": "http://localhost:8081/webhooks/payments",
+        "interest": 3
     }
 
-Resposta:
+Retorno:
 
     {
-      "clientId": "a81ba72c-f7a8-4e3d-9c41-87af",
-      "secretKey": "41a0d22-f1ce9b892"
+      "clientId": "...",
+      "secretKey": "..."
     }
 
 ------------------------------------------------------------------------
 
-3. Obter Token Basic do Merchant
+3. Obter Token BASIC
 
-O Merchant utiliza suas chaves (clientId e secretKey) para gerar um
-token Basic.
+Gera o token utilizados nos pagamentos.
 
     POST /merchant/obterToken
-    BODY:
+    Headers:
+      Content-Type: application/json
+
+    Body:
     {
       "clientId": "${CLIENT_ID}",
       "secretKey": "${SECRET_KEY}"
@@ -67,153 +66,93 @@ token Basic.
 Retorno:
 
     {
-      "token": "Basic ZGFza..."
+      "token": "Basic ZGFkYXNkYXNkYXNk..."
     }
-
-Esse token Basic será usado para gerar pagamentos e consultar
-transações.
 
 ------------------------------------------------------------------------
 
 💳 4. Criar Pagamento
 
     POST /payments
-    Authorization: Basic ${MERCHANT_TOKEN}
-    BODY:
+    Headers:
+      Authorization: Basic {{bToken}}
+      Idempotency-Key: 123e4567-e89b-12d3-a456-426614174000
+      Content-Type: application/json
+
+    Body:
     {
-      "amount": 150.00,
-      "description": "Pedido #5822",
-      "paymentMethod": "PIX",
-      "customer": {
-        "name": "André Luiz",
-        "email": "andre@email.com"
+      "method": "CARD",
+      "currency": "BRL",
+      "amount": 19990.50,
+      "metadataOrderId": "order-123",
+      "details": {
+        "installments": 3
       }
     }
 
-Resposta:
+Retorno:
 
     {
-      "paymentId": "e12f98b7-5b2d-4dd8-b7a1-4f8",
+      "paymentId": "...",
       "status": "PROCESSING",
-      "createdAt": "...",
-      "merchantId": "...",
-      "amount": 150.00
+      "amount": 19990.50,
+      "currency": "BRL",
+      "method": "CARD"
     }
 
 ------------------------------------------------------------------------
 
 🔎 5. Consultar Pagamento
 
-    GET /payments/{id}
-    Authorization: Basic ${MERCHANT_TOKEN}
+    GET /payments/{paymentId}
+    Headers:
+      Authorization: Basic {{bToken}}
 
 ------------------------------------------------------------------------
 
-📡 Webhooks e Entregas (Delivery)
+📡 Webhooks
 
-A aplicação possui:
+O merchant recebe eventos como:
 
--   Webhook: eventos enviados ao sistema do cliente.
--   Delivery Service: reentregas automáticas e logs de tentativas.
--   WebhookEventFactory: cria eventos para cada mudança de estado do
-    pagamento.
+-   PAYMENT_PROCESSING
+-   PAYMENT_APPROVED
+-   PAYMENT_FAILED
+
+Sempre enviados ao webhookUrl.
 
 ------------------------------------------------------------------------
 
-🧵 Threads / Processamento Assíncrono
-
-A aplicação utiliza uma execução paralela configurada:
+🧵 Threads Assíncronas
 
     fiadopay.webhook-threads=8
 
-Se o valor não existir no .env ou variáveis de ambiente, o sistema usa 8
-como padrão.
-
-Esse sistema permite processar múltiplos pagamentos simultaneamente,
-evitando bloqueios do Tomcat.
+Utilizadas para processar eventos sem bloquear o Tomcat.
 
 ------------------------------------------------------------------------
 
 📝 Logs e Métricas
 
-A aplicação contém:
-
 -   Logback configurado
--   Logs estruturados por contexto (user, merchant, payment)
--   Métricas do processamento assíncrono
--   Rastreamento de webhooks e entregas
+-   Métricas de tentativas de webhook
+-   Logs estruturados por Payment e Merchant
 
 ------------------------------------------------------------------------
 
-🧬 Entidades Principais
+🧬 Entidades
 
-User
-
--   id
--   email
--   password
--   merchants (lista)
-
-Merchant
-
--   id
--   name
--   clientId
--   secretKey
--   payments
--   webhooks
-
-Payment
-
--   id
--   amount
--   status
--   merchantId
--   eventos de webhook
-
-Webhook
-
--   id
--   event
--   url
--   merchant
-
-Delivery
-
--   id
--   webhookId
--   attempt
--   status
-
-------------------------------------------------------------------------
-
-🧪 Variáveis de Ambiente (Exemplos)
-
-    EMAIL="andre@email.com"
-    PASSWORD="123456"
-    MERCHANT_NAME="Loja FiaDoPay"
-    CLIENT_ID="..."
-    SECRET_KEY="..."
-    USER_TOKEN="..."
-    MERCHANT_TOKEN="..."
-
-------------------------------------------------------------------------
-
-📦 Resumo
-
-A aplicação fornece um fluxo completo:
-
-1.  Criar user → recebe Bearer
-2.  Criar merchant → recebe clientId + secretKey
-3.  Obter token Basic
-4.  Criar pagamento
-5.  Consultar pagamento
-6.  Receber eventos via webhook
-7.  Monitorar tentativas de entrega
+User, Merchant, Payment, Webhook e Delivery.
 
 ------------------------------------------------------------------------
 
 ✔ Final
 
-Esse README resume todo o fluxo e explica a função de cada parte da
-aplicação.
+Fluxo completo:
+
+1.  Criar User → token Bearer
+2.  Criar Merchant → clientId + secretKey
+3.  Obter Basic Token
+4.  Criar Pagamento
+5.  Consultar Pagamento
+6.  Receber Webhooks
+
+Tudo pronto!
